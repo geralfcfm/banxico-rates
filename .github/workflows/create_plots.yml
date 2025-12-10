@@ -1,12 +1,8 @@
 name: Generate Visualizations
 
 on:
-  # 1. Time Trigger: Runs at 06:00 UTC every Wednesday
-  # (Completely independent of the 02:00 data fetch)
   schedule:
-    - cron: '0 6 * * 3'
-    
-  # 2. Manual Trigger: Click the button whenever you want
+    - cron: '0 6 * * 3' # 6:00 AM UTC
   workflow_dispatch:
 
 permissions:
@@ -15,7 +11,7 @@ permissions:
 jobs:
   visualize:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,16 +22,17 @@ jobs:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        # Ensure seaborn and matplotlib are in requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Generate Plot
         run: python generate_plots.py
+        # If the script fails (sys.exit(1)), the workflow stops here.
 
       - name: Commit and Push Plot
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
           git add plots/data_availability.png
-          # Only commit if the plot actually changed
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update visualization" && git push)
+          # Check for changes; if none, do nothing.
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update visualization [skip ci]" && git push)
