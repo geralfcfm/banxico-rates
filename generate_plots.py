@@ -6,6 +6,7 @@ import os
 
 # --- Configuration ---
 DATA_FILE = 'data/banxico_rates.csv'
+os.makedirs('plots', exist_ok=True)
 PLOT_DIR = 'plots'
 PLOT_FILE = f'{PLOT_DIR}/data_availability.png'
 
